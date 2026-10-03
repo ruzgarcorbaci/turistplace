@@ -1,0 +1,1800 @@
+<!DOCTYPE html>
+<html lang="tr" class="dark scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WorldTour - Dünya Turistik Yerler & Bilet Rehberi | World Destinations</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f0fdfa',
+                            400: '#2dd4bf',
+                            500: '#14b8a6',
+                            600: '#0d9488',
+                            700: '#0f766e',
+                            900: '#134e4a',
+                        }
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'pulse-glow': 'pulseGlow 3s infinite',
+                        'fade-in': 'fadeIn 0.3s ease-out forwards',
+                        'zoom-in': 'zoomIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards'
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0px)' },
+                            '50%': { transform: 'translateY(-8px)' },
+                        },
+                        pulseGlow: {
+                            '0%, 100%': { opacity: '0.3' },
+                            '50%': { opacity: '0.7' },
+                        },
+                        fadeIn: {
+                            '0%': { opacity: '0', transform: 'translateY(10px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        },
+                        zoomIn: {
+                            '0%': { opacity: '0', transform: 'scale(0.92)' },
+                            '100%': { opacity: '1', transform: 'scale(1)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- FontAwesome Icons CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Font Plus Jakarta Sans -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        /* Custom scrollbar and glassmorphism styling */
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #030712;
+            color: #f3f4f6;
+        }
+        .glass-panel {
+            background: rgba(17, 24, 39, 0.75);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .glass-card {
+            background: rgba(31, 41, 55, 0.65);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .glass-card:hover {
+            transform: translateY(-6px);
+            border-color: rgba(45, 212, 191, 0.4);
+            box-shadow: 0 20px 30px -10px rgba(20, 184, 166, 0.2);
+        }
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #030712;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1f2937;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #14b8a6;
+        }
+        .gradient-text {
+            background: linear-gradient(135deg, #2dd4bf 0%, #38bdf8 50%, #818cf8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col antialiased selection:bg-brand-500 selection:text-white pb-20">
+
+    <div class="fixed top-0 left-1/4 w-96 h-96 bg-brand-500/10 rounded-full blur-[140px] pointer-events-none -z-10 animate-pulse-glow"></div>
+    <div class="fixed bottom-0 right-1/4 w-96 h-96 bg-blue-600/10 rounded-full blur-[140px] pointer-events-none -z-10 animate-pulse-glow"></div>
+
+    <header class="sticky top-0 z-40 glass-panel border-b border-slate-800/80">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-4">
+            
+            <!-- App Logo -->
+            <a href="#" class="flex items-center gap-3 group shrink-0">
+                <div class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-brand-600 to-sky-400 flex items-center justify-center text-white shadow-lg shadow-brand-500/20 group-hover:scale-105 transition-transform">
+                    <i class="fa-solid fa-earth-americas text-xl"></i>
+                </div>
+                <div>
+                    <span class="text-xl sm:text-2xl font-black tracking-tight text-white">World<span class="gradient-text">Tour</span></span>
+                    <span id="txt-app-subtitle" class="block text-[10px] text-slate-400 font-medium tracking-wider uppercase">Bilet & Gezi Rehberi</span>
+                </div>
+            </a>
+
+            <!-- Header Controls (Lang, Currency, Wishlist) -->
+            <div class="flex items-center gap-2 sm:gap-3 flex-wrap justify-end">
+                
+                <!-- Language Selector Toggle [ TR | EN ] -->
+                <div class="relative inline-flex items-center bg-slate-900/90 border border-slate-700/80 rounded-xl p-1 text-xs font-bold">
+                    <button onclick="setLanguage('TR')" id="btn-lang-tr" class="px-2.5 py-1.5 rounded-lg transition-all duration-200 bg-brand-600 text-white shadow-sm">TR</button>
+                    <button onclick="setLanguage('EN')" id="btn-lang-en" class="px-2.5 py-1.5 rounded-lg transition-all duration-200 text-slate-400 hover:text-white">EN</button>
+                </div>
+
+                <!-- Currency Selector -->
+                <div class="relative inline-flex items-center bg-slate-900/90 border border-slate-700/80 rounded-xl p-1 text-xs">
+                    <span id="txt-currency-label" class="px-2 text-slate-400 font-medium hidden md:inline"><i class="fa-solid fa-coins text-amber-400 mr-1"></i> Para Birimi:</span>
+                    <button onclick="setCurrency('USD')" id="btn-usd" class="px-2 py-1 sm:px-2.5 sm:py-1.5 rounded-lg font-semibold transition-all duration-200 bg-brand-600 text-white shadow-sm">$</button>
+                    <button onclick="setCurrency('EUR')" id="btn-eur" class="px-2 py-1 sm:px-2.5 sm:py-1.5 rounded-lg font-semibold transition-all duration-200 text-slate-300 hover:text-white">€</button>
+                    <button onclick="setCurrency('TRY')" id="btn-try" class="px-2 py-1 sm:px-2.5 sm:py-1.5 rounded-lg font-semibold transition-all duration-200 text-slate-300 hover:text-white">₺</button>
+                    <button onclick="setCurrency('GBP')" id="btn-gbp" class="px-2 py-1 sm:px-2.5 sm:py-1.5 rounded-lg font-semibold transition-all duration-200 text-slate-300 hover:text-white">£</button>
+                </div>
+
+                <!-- Wishlist Toggle Button -->
+                <button id="wishlist-btn" onclick="toggleWishlistFilter()" class="relative p-2.5 rounded-xl bg-slate-800/80 border border-slate-700/70 text-slate-300 hover:text-pink-400 hover:border-pink-500/50 transition-all flex items-center gap-2">
+                    <i class="fa-solid fa-heart text-pink-500"></i>
+                    <span id="txt-wishlist-btn" class="text-xs font-semibold hidden lg:inline">Favorilerim</span>
+                    <span id="wishlist-badge" class="px-1.5 py-0.5 text-[10px] font-bold bg-pink-500 text-white rounded-full">0</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+        
+        <!-- SPONSORED AD #1: FlyX Airlines Hero Top Banner -->
+        <div id="ad-hero-banner" class="relative overflow-hidden rounded-2xl bg-gradient-to-r from-blue-900/80 via-slate-900 to-indigo-950 border border-blue-500/30 p-4 sm:p-5 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-xl">
+            <div class="flex items-center gap-3">
+                <div class="w-12 h-12 rounded-xl bg-blue-500/20 border border-blue-400/30 flex items-center justify-center text-blue-400 text-2xl shrink-0">
+                    <i class="fa-solid fa-plane-departure animate-pulse"></i>
+                </div>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <span class="px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-wider bg-amber-400 text-slate-950">SPONSOR</span>
+                        <h4 id="ad-fly-title" class="text-sm font-bold text-white">FlyX Airlines - Erken Rezervasyon Fırsatları!</h4>
+                    </div>
+                    <p id="ad-fly-desc" class="text-xs text-slate-300 mt-0.5">Tüm uçuşlarda %35'e varan erken rezervasyon indirimi. 'WORLD2026' koduyla hemen bilet al!</p>
+                </div>
+            </div>
+            <button onclick="showToast('FlyX yönlendiriliyor...', true)" id="ad-fly-btn" class="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs rounded-xl shadow-lg transition-all shrink-0">
+                Uçuş Ara
+            </button>
+        </div>
+
+        <!-- Hero Section -->
+        <section class="relative rounded-3xl overflow-hidden glass-panel p-6 sm:p-10 text-center border border-slate-800 shadow-2xl">
+            <div class="absolute inset-0 bg-gradient-to-r from-brand-600/10 via-sky-500/10 to-indigo-600/10 -z-10"></div>
+            
+            <span id="txt-hero-badge" class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-brand-500/10 text-brand-400 border border-brand-500/20 mb-4 animate-bounce">
+                <i class="fa-solid fa-compass"></i> Dünyanın En Popüler 32 Turistik Mekanı
+            </span>
+
+            <h1 id="txt-hero-title" class="text-2xl sm:text-4xl lg:text-5xl font-black text-white tracking-tight leading-tight max-w-4xl mx-auto">
+                Hayalindeki Rota, <span class="gradient-text">Şeffaf Bilet Fiyatları</span>
+            </h1>
+            <p id="txt-hero-desc" class="mt-3 text-slate-400 text-xs sm:text-sm max-w-2xl mx-auto leading-relaxed">
+                Dünyanın en ikonik mimari ve tarihi harikalarını keşfedin, güncel giriş ücretlerini karşılaştırın ve grup bütçenizi anında hesaplayın.
+            </p>
+
+            <!-- Search Bar in Hero -->
+            <div class="mt-6 max-w-2xl mx-auto relative">
+                <div class="relative flex items-center">
+                    <i class="fa-solid fa-magnifying-glass absolute left-4 text-slate-400 text-lg"></i>
+                    <input type="text" id="search-input" oninput="handleSearch()" placeholder="Mekan, şehir veya ülke ara..." 
+                        class="w-full pl-12 pr-10 py-3.5 rounded-2xl bg-slate-900/90 border border-slate-700/80 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition-all shadow-xl text-xs sm:text-sm">
+                    <button id="clear-search" onclick="clearSearch()" class="hidden absolute right-4 text-slate-400 hover:text-white">
+                        <i class="fa-solid fa-xmark text-lg"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Filter Controls Container -->
+        <section class="space-y-6 glass-panel p-6 rounded-2xl border border-slate-800">
+            
+            <!-- Continents Tabs -->
+            <div>
+                <label id="txt-continent-label" class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">
+                    <i class="fa-solid fa-globe mr-1 text-brand-400"></i> Kıta Seçimi
+                </label>
+                <div class="flex flex-wrap gap-2" id="continent-filters">
+                    <!-- Populated dynamically via JS -->
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 pt-4 border-t border-slate-800/80 items-end">
+                <!-- Category Filter -->
+                <div>
+                    <label id="txt-category-label" class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">
+                        <i class="fa-solid fa-layer-group mr-1 text-brand-400"></i> Kategori
+                    </label>
+                    <select id="category-filter" onchange="applyFilters()" class="w-full bg-slate-900 border border-slate-700 text-slate-200 text-xs sm:text-sm rounded-xl p-3 focus:ring-2 focus:ring-brand-500 focus:outline-none">
+                        <!-- Populated dynamically -->
+                    </select>
+                </div>
+
+                <!-- Price Range Filter -->
+                <div>
+                    <div class="flex justify-between items-center mb-2">
+                        <label id="txt-maxprice-label" class="text-xs font-bold text-slate-400 uppercase tracking-wider">
+                            <i class="fa-solid fa-tag mr-1 text-brand-400"></i> Max Bilet Ücreti
+                        </label>
+                        <span id="price-limit-display" class="text-xs font-bold text-brand-400 bg-brand-500/10 px-2 py-0.5 rounded border border-brand-500/20">$100</span>
+                    </div>
+                    <input type="range" id="price-slider" min="0" max="100" value="100" step="5" oninput="updatePriceSlider(this.value)" class="w-full accent-brand-500 h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer">
+                    <div class="flex justify-between text-[10px] text-slate-500 mt-1 font-medium">
+                        <span id="txt-free-price">Ücretsiz</span>
+                        <span>$50</span>
+                        <span>$100+</span>
+                    </div>
+                </div>
+
+                <!-- Sorting Dropdown -->
+                <div>
+                    <label id="txt-sort-label" class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">
+                        <i class="fa-solid fa-arrow-down-wide-short mr-1 text-brand-400"></i> Sıralama
+                    </label>
+                    <select id="sort-order" onchange="applyFilters()" class="w-full bg-slate-900 border border-slate-700 text-slate-200 text-xs sm:text-sm rounded-xl p-3 focus:ring-2 focus:ring-brand-500 focus:outline-none">
+                        <!-- Populated dynamically -->
+                    </select>
+                </div>
+
+                <!-- SPONSORED AD #2: TravelGuard Insurance Filter Side Banner -->
+                <div id="ad-guard-box" class="bg-gradient-to-br from-emerald-950/70 to-slate-900 p-3 rounded-xl border border-emerald-500/30 flex items-center justify-between gap-2">
+                    <div>
+                        <div class="flex items-center gap-1.5">
+                            <span class="px-1.5 py-0.5 rounded text-[8px] font-black uppercase bg-emerald-500 text-slate-950">SPONSOR</span>
+                            <h5 id="ad-guard-title" class="text-xs font-bold text-emerald-300">TravelGuard Sigorta</h5>
+                        </div>
+                        <p id="ad-guard-desc" class="text-[10px] text-slate-300 mt-1 line-clamp-1">$50.000 güvence $1/günden itibaren.</p>
+                    </div>
+                    <button onclick="showToast('TravelGuard yönlendiriliyor...', true)" id="ad-guard-btn" class="px-2.5 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-[10px] rounded-lg transition-all shrink-0">
+                        Teklif Al
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Statistics Panel -->
+        <section class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div class="glass-card p-4 rounded-2xl flex items-center gap-4">
+                <div class="w-11 h-11 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400 text-lg">
+                    <i class="fa-solid fa-landmark"></i>
+                </div>
+                <div>
+                    <span id="stat-total-count" class="text-2xl font-black text-white block">0</span>
+                    <span id="txt-stat-shown" class="text-xs text-slate-400 font-medium">Gösterilen Mekan</span>
+                </div>
+            </div>
+
+            <div class="glass-card p-4 rounded-2xl flex items-center gap-4">
+                <div class="w-11 h-11 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 text-lg">
+                    <i class="fa-solid fa-receipt"></i>
+                </div>
+                <div>
+                    <span id="stat-avg-price" class="text-2xl font-black text-white block">$0</span>
+                    <span id="txt-stat-avgprice" class="text-xs text-slate-400 font-medium">Ortalama Bilet</span>
+                </div>
+            </div>
+
+            <div class="glass-card p-4 rounded-2xl flex items-center gap-4">
+                <div class="w-11 h-11 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400 text-lg">
+                    <i class="fa-solid fa-star"></i>
+                </div>
+                <div>
+                    <span id="stat-avg-rating" class="text-2xl font-black text-white block">4.8</span>
+                    <span id="txt-stat-avgrating" class="text-xs text-slate-400 font-medium">Ort. Ziyaretçi Puanı</span>
+                </div>
+            </div>
+
+            <div class="glass-card p-4 rounded-2xl flex items-center gap-4">
+                <div class="w-11 h-11 rounded-xl bg-pink-500/10 border border-pink-500/20 flex items-center justify-center text-pink-400 text-lg">
+                    <i class="fa-solid fa-heart"></i>
+                </div>
+                <div>
+                    <span id="stat-fav-count" class="text-2xl font-black text-white block">0</span>
+                    <span id="txt-stat-favorites" class="text-xs text-slate-400 font-medium">Favori Listenizde</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Active Filter Indicator Banner -->
+        <div id="active-filter-banner" class="hidden flex items-center justify-between bg-brand-500/10 border border-brand-500/30 text-brand-300 px-4 py-3 rounded-xl text-xs sm:text-sm">
+            <span id="active-filter-text">Arama Filtreleri Aktif</span>
+            <button onclick="resetAllFilters()" id="btn-clear-filters" class="text-xs font-bold underline hover:text-white">Filtreleri Temizle</button>
+        </div>
+
+        <!-- Cards Grid -->
+        <div id="cards-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <!-- Dynamic attraction cards & Native Ad injected here -->
+        </div>
+
+        <!-- Empty State View -->
+        <div id="empty-state" class="hidden glass-panel p-12 text-center rounded-3xl space-y-4 max-w-md mx-auto">
+            <div class="w-16 h-16 bg-slate-800 rounded-full flex items-center justify-center mx-auto text-slate-500 text-2xl">
+                <i class="fa-solid fa-compass-drafting"></i>
+            </div>
+            <h3 id="txt-noresults-title" class="text-lg font-bold text-white">Sonuç Bulunamadı</h3>
+            <p id="txt-noresults-desc" class="text-slate-400 text-xs">Aradığınız kriterlere uygun turistik mekan bulunamadı.</p>
+            <button onclick="resetAllFilters()" id="btn-show-all" class="px-4 py-2 bg-brand-600 hover:bg-brand-500 text-white font-semibold rounded-xl text-xs transition-all">
+                Tüm Mekanları Göster
+            </button>
+        </div>
+
+    </main>
+
+    <!-- Fullscreen Lightbox Gallery Modal -->
+    <div id="lightbox-modal" class="fixed inset-0 z-50 hidden flex flex-col justify-between bg-slate-950/95 backdrop-blur-xl animate-zoom-in p-4 sm:p-6">
+        
+        <!-- Lightbox Header Controls -->
+        <div class="flex items-center justify-between text-white z-10">
+            <div class="flex items-center gap-3">
+                <span class="w-3 h-3 rounded-full bg-rose-500 animate-ping"></span>
+                <span id="lb-counter" class="text-xs font-bold tracking-widest text-slate-400">1 / 32</span>
+            </div>
+            <button onclick="closeLightbox()" class="w-11 h-11 rounded-full bg-slate-900/80 border border-slate-700 text-slate-200 hover:text-white flex items-center justify-center transition-all hover:scale-110">
+                <i class="fa-solid fa-xmark text-xl"></i>
+            </button>
+        </div>
+
+        <!-- Lightbox Main Media Container -->
+        <div class="relative flex-grow flex items-center justify-center my-4 overflow-hidden select-none">
+            <!-- Left Nav Button -->
+            <button onclick="navLightbox(-1)" class="absolute left-2 sm:left-6 z-20 w-12 h-12 rounded-full bg-slate-900/80 border border-slate-700 text-slate-200 hover:text-white flex items-center justify-center transition-all hover:scale-110 active:scale-95 shadow-xl">
+                <i class="fa-solid fa-chevron-left text-lg"></i>
+            </button>
+
+            <!-- Main Fullscreen Image -->
+            <img id="lb-image" src="" alt="Fullscreen view" class="max-h-[75vh] max-w-full object-contain rounded-2xl shadow-2xl transition-all duration-300">
+
+            <!-- Right Nav Button -->
+            <button onclick="navLightbox(1)" class="absolute right-2 sm:right-6 z-20 w-12 h-12 rounded-full bg-slate-900/80 border border-slate-700 text-slate-200 hover:text-white flex items-center justify-center transition-all hover:scale-110 active:scale-95 shadow-xl">
+                <i class="fa-solid fa-chevron-right text-lg"></i>
+            </button>
+        </div>
+
+        <!-- Lightbox Bottom Caption Glass Panel -->
+        <div class="glass-panel rounded-2xl p-4 sm:p-6 max-w-4xl mx-auto w-full border border-slate-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 z-10">
+            <div class="space-y-1">
+                <div class="flex items-center gap-2">
+                    <span id="lb-continent" class="px-2 py-0.5 rounded text-[10px] font-black uppercase bg-brand-500 text-slate-950">Avrupa</span>
+                    <span id="lb-category" class="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-slate-800 text-slate-300">Mimari</span>
+                </div>
+                <h3 id="lb-title" class="text-xl sm:text-2xl font-black text-white">Eyfel Kulesi</h3>
+                <p id="lb-location" class="text-xs text-slate-400 flex items-center gap-1">
+                    <i class="fa-solid fa-location-dot text-rose-500"></i> Paris, Fransa
+                </p>
+            </div>
+            
+            <div class="flex items-center gap-4 w-full sm:w-auto justify-between sm:justify-end">
+                <div class="text-right">
+                    <span id="txt-lb-fee" class="text-[10px] text-slate-400 block uppercase font-bold">Giriş Ücreti</span>
+                    <span id="lb-price" class="text-2xl font-black text-brand-400">$32</span>
+                </div>
+                <button onclick="openDetailModalFromLightbox()" id="btn-lb-details" class="px-4 py-2.5 bg-brand-600 hover:bg-brand-500 text-white text-xs font-bold rounded-xl transition-all shadow-lg flex items-center gap-2">
+                    <i class="fa-solid fa-calculator"></i> <span id="txt-lb-calc-btn">Bütçe Hesapla</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Attraction Detail & Budget Modal -->
+    <div id="detail-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-slate-950/85 backdrop-blur-md overflow-y-auto">
+        <div class="relative w-full max-w-3xl glass-panel rounded-3xl border border-slate-700/80 overflow-hidden shadow-2xl animate-fade-in my-8">
+            
+            <!-- Close Modal Button -->
+            <button onclick="closeModal()" class="absolute top-4 right-4 z-10 w-10 h-10 rounded-full bg-slate-900/80 border border-slate-700 text-slate-300 hover:text-white flex items-center justify-center transition-all">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+
+            <!-- Modal Banner Image -->
+            <div class="relative h-60 sm:h-72 w-full overflow-hidden cursor-pointer" onclick="openLightboxFromModal()">
+                <img id="modal-img" src="" alt="Attraction Image" class="w-full h-full object-cover">
+                <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/30 to-transparent"></div>
+                
+                <span class="absolute top-4 left-4 bg-slate-900/90 text-white text-[10px] font-bold px-3 py-1.5 rounded-xl border border-slate-700 flex items-center gap-1.5 shadow-lg">
+                    <i class="fa-solid fa-expand text-brand-400"></i> <span id="txt-modal-open-gallery">Tam Ekran Galeri</span>
+                </span>
+
+                <div class="absolute bottom-4 left-6 right-6 flex justify-between items-end">
+                    <div>
+                        <span id="modal-continent" class="px-2.5 py-1 rounded-md text-[10px] font-bold tracking-wider uppercase bg-brand-500 text-slate-950 mb-2 inline-block">Kıta</span>
+                        <h2 id="modal-title" class="text-2xl sm:text-3xl font-black text-white">Mekan Adı</h2>
+                        <p id="modal-location" class="text-slate-300 text-xs sm:text-sm mt-1 flex items-center gap-1.5">
+                            <i class="fa-solid fa-location-dot text-rose-500"></i> Şehir, Ülke
+                        </p>
+                    </div>
+                    <div class="text-right">
+                        <span id="txt-modal-startprice" class="text-xs text-slate-400 block">Başlangıç Fiyatı</span>
+                        <span id="modal-base-price" class="text-2xl font-black text-brand-400">$0</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal Content -->
+            <div class="p-6 sm:p-8 space-y-6 text-xs sm:text-sm">
+                
+                <!-- Quick Info Badges -->
+                <div class="grid grid-cols-3 gap-3 p-3 bg-slate-900/80 rounded-2xl border border-slate-800 text-center">
+                    <div>
+                        <span id="txt-modal-catlabel" class="text-[10px] text-slate-400 block">Kategori</span>
+                        <span id="modal-category" class="font-semibold text-slate-200">-</span>
+                    </div>
+                    <div>
+                        <span id="txt-modal-hourslabel" class="text-[10px] text-slate-400 block">Ziyaret Saatleri</span>
+                        <span id="modal-hours" class="font-semibold text-slate-200">-</span>
+                    </div>
+                    <div>
+                        <span id="txt-modal-seasonlabel" class="text-[10px] text-slate-400 block">En Uygun Sezon</span>
+                        <span id="modal-season" class="font-semibold text-slate-200">-</span>
+                    </div>
+                </div>
+
+                <!-- History / Overview Paragraph -->
+                <div>
+                    <h3 id="txt-modal-overview" class="text-sm font-bold text-white mb-2 flex items-center gap-2">
+                        <i class="fa-solid fa-book-open text-brand-400"></i> Tarihi & Özet Bilgi
+                    </h3>
+                    <p id="modal-desc" class="text-slate-300 leading-relaxed text-xs">
+                        Mekan ile ilgili geniş açıklama metni buraya gelecek.
+                    </p>
+                </div>
+
+                <!-- Interactive Budget Calculator Component -->
+                <div class="bg-slate-900/90 rounded-2xl p-5 border border-slate-800 space-y-4">
+                    <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                        <h3 id="txt-modal-budget-title" class="text-sm sm:text-base font-bold text-white flex items-center gap-2">
+                            <i class="fa-solid fa-calculator text-amber-400"></i> İnteraktif Grup Bütçesi Hesaplama
+                        </h3>
+                        <span id="group-discount-badge" class="text-[10px] font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20 hidden">
+                            %15 Grup İndirimi!
+                        </span>
+                    </div>
+
+                    <!-- Ticket Quantity Controls -->
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <!-- Adult Ticket -->
+                        <div class="bg-slate-800/50 p-3 rounded-xl border border-slate-700/50">
+                            <div class="flex justify-between items-center mb-2">
+                                <span id="txt-modal-adult" class="font-semibold text-xs text-slate-200">Yetişkin Tam</span>
+                                <span id="calc-adult-price" class="text-xs text-brand-400 font-bold">$0</span>
+                            </div>
+                            <div class="flex items-center justify-between bg-slate-900 rounded-lg p-1 border border-slate-700">
+                                <button onclick="updateTicketCount('adult', -1)" class="w-7 h-7 rounded bg-slate-800 hover:bg-slate-700 font-bold text-slate-200 text-sm">-</button>
+                                <span id="count-adult" class="font-bold text-slate-100">1</span>
+                                <button onclick="updateTicketCount('adult', 1)" class="w-7 h-7 rounded bg-slate-800 hover:bg-slate-700 font-bold text-slate-200 text-sm">+</button>
+                            </div>
+                        </div>
+
+                        <!-- Student Ticket -->
+                        <div class="bg-slate-800/50 p-3 rounded-xl border border-slate-700/50">
+                            <div class="flex justify-between items-center mb-2">
+                                <span id="txt-modal-student" class="font-semibold text-xs text-slate-200">Öğrenci (%20 İndirim)</span>
+                                <span id="calc-student-price" class="text-xs text-brand-400 font-bold">$0</span>
+                            </div>
+                            <div class="flex items-center justify-between bg-slate-900 rounded-lg p-1 border border-slate-700">
+                                <button onclick="updateTicketCount('student', -1)" class="w-7 h-7 rounded bg-slate-800 hover:bg-slate-700 font-bold text-slate-200 text-sm">-</button>
+                                <span id="count-student" class="font-bold text-slate-100">0</span>
+                                <button onclick="updateTicketCount('student', 1)" class="w-7 h-7 rounded bg-slate-800 hover:bg-slate-700 font-bold text-slate-200 text-sm">+</button>
+                            </div>
+                        </div>
+
+                        <!-- Child Ticket -->
+                        <div class="bg-slate-800/50 p-3 rounded-xl border border-slate-700/50">
+                            <div class="flex justify-between items-center mb-2">
+                                <span id="txt-modal-child" class="font-semibold text-xs text-slate-200">Çocuk (%50 İndirim)</span>
+                                <span id="calc-child-price" class="text-xs text-brand-400 font-bold">$0</span>
+                            </div>
+                            <div class="flex items-center justify-between bg-slate-900 rounded-lg p-1 border border-slate-700">
+                                <button onclick="updateTicketCount('child', -1)" class="w-7 h-7 rounded bg-slate-800 hover:bg-slate-700 font-bold text-slate-200 text-sm">-</button>
+                                <span id="count-child" class="font-bold text-slate-100">0</span>
+                                <button onclick="updateTicketCount('child', 1)" class="w-7 h-7 rounded bg-slate-800 hover:bg-slate-700 font-bold text-slate-200 text-sm">+</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Total Price Display Footer inside Modal -->
+                    <div class="flex items-center justify-between bg-gradient-to-r from-brand-900/40 to-slate-800 p-4 rounded-xl border border-brand-500/30">
+                        <div>
+                            <span id="txt-modal-totalbudget" class="text-xs text-slate-300 block font-semibold">Tahmini Toplam Bilet Maliyeti:</span>
+                            <span id="group-discount-note" class="text-[10px] text-slate-400">5 kişi ve üzerine %15 otomatik indirim.</span>
+                        </div>
+                        <span id="modal-total-calculated" class="text-2xl sm:text-3xl font-black text-brand-300">$0</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SPONSORED AD #4: BookingPlus Sticky Bottom Bar -->
+    <div id="ad-sticky-bottom" class="fixed bottom-0 inset-x-0 z-30 bg-slate-900/95 backdrop-blur-md border-t border-purple-500/40 px-4 py-3 shadow-2xl transition-all duration-300">
+        <div class="max-w-7xl mx-auto flex items-center justify-between gap-4">
+            <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-lg bg-purple-500/20 border border-purple-400/30 flex items-center justify-center text-purple-400 text-lg shrink-0">
+                    <i class="fa-solid fa-hotel"></i>
+                </div>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <span class="px-1.5 py-0.2 rounded text-[8px] font-black uppercase bg-purple-500 text-white">SPONSOR</span>
+                        <h5 id="ad-booking-title" class="text-xs font-bold text-white">BookingPlus - Otellerde Son Dakika Fırsatları!</h5>
+                    </div>
+                    <p id="ad-booking-desc" class="text-[11px] text-slate-300 hidden sm:block">Popüler destinasyonlardaki 5 yıldızlı otellerde %40 indirim fırsatı.</p>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-3 shrink-0">
+                <button onclick="showToast('BookingPlus yönlendiriliyor...', true)" id="ad-booking-btn" class="px-3.5 py-1.5 bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs rounded-lg transition-all">
+                    Otel Bul
+                </button>
+                <button onclick="document.getElementById('ad-sticky-bottom').remove()" class="text-slate-400 hover:text-white text-sm p-1">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-16 right-6 z-50 transform translate-y-20 opacity-0 transition-all duration-300 flex items-center gap-3 bg-slate-900 border border-brand-500/50 px-4 py-3 rounded-2xl shadow-2xl">
+        <i id="toast-icon" class="fa-solid fa-circle-check text-brand-400 text-lg"></i>
+        <span id="toast-message" class="text-xs font-semibold text-white">Favorilere eklendi</span>
+    </div>
+
+    <footer class="mt-auto border-t border-slate-800/80 glass-panel py-8">
+        <div class="max-w-7xl mx-auto px-4 text-center space-y-3">
+            <p id="txt-footer-copy" class="text-xs text-slate-400">
+                &copy; 2026 <span class="font-bold text-white">WorldTour</span>. Tüm dünya turizm verileri ve bilet rehberi.
+            </p>
+            <p id="txt-footer-disclaimer" class="text-[11px] text-slate-500">
+                Fiyatlar ortalama yetişkin bilet tarifeleri baz alınarak sunulmuştur. Değişiklik gösterebilir.
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        const translations = {
+            TR: {
+                appSubTitle: "Bilet & Gezi Rehberi",
+                currencyLabel: "Para Birimi:",
+                wishlistBtn: "Favorilerim",
+                heroBadge: "Dünyanın En Popüler 32 Turistik Mekanı",
+                heroTitle: "Hayalindeki Rota, <span class='gradient-text'>Şeffaf Bilet Fiyatları</span>",
+                heroDesc: "Dünyanın en ikonik mimari ve tarihi harikalarını keşfedin, güncel giriş ücretlerini karşılaştırın ve grup bütçenizi anında hesaplayın.",
+                searchPlaceholder: "Mekan, şehir veya ülke ara... (Örn: Eyfel, Roma, Japonya)",
+                continentLabel: "Kıta Seçimi",
+                categoryLabel: "Kategori",
+                maxPriceLabel: "Max Bilet Ücreti",
+                sortLabel: "Sıralama",
+                freePrice: "Ücretsiz",
+                statShown: "Gösterilen Mekan",
+                statAvgPrice: "Ortalama Bilet",
+                statAvgRating: "Ort. Ziyaretçi Puanı",
+                statFavorites: "Favori Listenizde",
+                noResultsTitle: "Sonuç Bulunamadı",
+                noResultsDesc: "Aradığınız kriterlere uygun turistik mekan bulunamadı. Lütfen arama teriminizi veya filtreleri değiştirin.",
+                showAllBtn: "Tüm Mekanları Göster",
+                clearFilters: "Filtreleri Temizle",
+                activeFilterBanner: "Arama Filtreleri Aktif",
+                entryFee: "Giriş Ücreti",
+                detailsBtn: "Detay",
+                modalStartPrice: "Başlangıç Fiyatı",
+                modalCatLabel: "Kategori",
+                modalHoursLabel: "Ziyaret Saatleri",
+                modalSeasonLabel: "En Uygun Sezon",
+                modalOverview: "Tarihi & Özet Bilgi",
+                modalBudgetTitle: "İnteraktif Grup Bütçesi Hesaplama",
+                modalAdult: "Yetişkin Tam",
+                modalStudent: "Öğrenci (%20 İndirim)",
+                modalChild: "Çocuk (%50 İndirim)",
+                modalTotalBudget: "Tahmini Toplam Bilet Maliyeti:",
+                modalOpenGallery: "Tam Ekran Galeri",
+                lbFee: "Giriş Ücreti",
+                lbCalcBtn: "Bütçe Hesapla",
+                toastAdded: "Favorilerinize eklendi!",
+                toastRemoved: "Favorilerinizden çıkarıldı!",
+                footerCopy: "© 2026 WorldTour. Tüm dünya turizm verileri ve bilet rehberi.",
+                footerDisclaimer: "Fiyatlar ortalama yetişkin bilet tarifeleri baz alınarak sunulmuştur. Değişiklik gösterebilir.",
+                // Sponsored Ads TR
+                adFlyTitle: "FlyX Airlines - Erken Rezervasyon Fırsatları!",
+                adFlyDesc: "Tüm uçuşlarda %35'e varan erken rezervasyon indirimi. 'WORLD2026' koduyla hemen bilet al!",
+                adFlyBtn: "Uçuş Ara",
+                adGuardTitle: "TravelGuard Sigorta",
+                adGuardDesc: "$50.000 güvence $1/günden itibaren.",
+                adGuardBtn: "Teklif Al",
+                adSimTitle: "GlobalSim - Sınırsız Roaming eSIM",
+                adSimDesc: "190+ ülkede fiziki SIM değiştirmeden anında 5G yüksek hızlı internet.",
+                adSimBtn: "eSIM Satın Al",
+                adSimBadge: "SPONSORLU ÖNERİ",
+                adBookingTitle: "BookingPlus - Otellerde Son Dakika Fırsatları!",
+                adBookingDesc: "Popüler destinasyonlardaki 5 yıldızlı otellerde %40 indirim fırsatı.",
+                adBookingBtn: "Otel Bul",
+                // Categories TR
+                catAll: "Tüm Kategoriler",
+                catHistory: "Tarih & Miras",
+                catArchitecture: "Mimari Harikalar",
+                catNature: "Doğa & Manzara",
+                catAdventure: "Macera & Keşif",
+                // Sort TR
+                sortDefault: "Varsayılan Sıralama",
+                sortPriceAsc: "Fiyat: Düşükten Yükseğe",
+                sortPriceDesc: "Fiyat: Yüksekten Düşüğe",
+                sortRatingDesc: "En Yüksek Puanlılar",
+                // Continents TR
+                contAll: "Tümü",
+                contEurope: "Avrupa",
+                contAsia: "Asya",
+                contAmericas: "Amerika",
+                contAfrica: "Afrika",
+                contOceania: "Okyanusya"
+            },
+            EN: {
+                appSubTitle: "Ticket & Travel Guide",
+                currencyLabel: "Currency:",
+                wishlistBtn: "My Wishlist",
+                heroBadge: "World's Top 32 Tourist Destinations",
+                heroTitle: "Your Dream Route, <span class='gradient-text'>Transparent Ticket Prices</span>",
+                heroDesc: "Explore the world's most iconic architectural and historic wonders, compare admission fees, and calculate group budgets instantly.",
+                searchPlaceholder: "Search destination, city or country... (e.g. Eiffel, Rome, Japan)",
+                continentLabel: "Select Continent",
+                categoryLabel: "Category",
+                maxPriceLabel: "Max Ticket Price",
+                sortLabel: "Sort By",
+                freePrice: "Free",
+                statShown: "Destinations Shown",
+                statAvgPrice: "Avg. Ticket Price",
+                statAvgRating: "Avg. Visitor Rating",
+                statFavorites: "In Favorites",
+                noResultsTitle: "No Results Found",
+                noResultsDesc: "No tourist attractions found matching your criteria. Please adjust your search term or filters.",
+                showAllBtn: "Show All Destinations",
+                clearFilters: "Clear Filters",
+                activeFilterBanner: "Search Filters Active",
+                entryFee: "Admission Fee",
+                detailsBtn: "Details",
+                modalStartPrice: "Starting Price",
+                modalCatLabel: "Category",
+                modalHoursLabel: "Visiting Hours",
+                modalSeasonLabel: "Best Season",
+                modalOverview: "History & Overview",
+                modalBudgetTitle: "Interactive Group Budget Calculator",
+                modalAdult: "Adult (Full)",
+                modalStudent: "Student (20% Off)",
+                modalChild: "Child (50% Off)",
+                modalTotalBudget: "Estimated Total Ticket Cost:",
+                modalOpenGallery: "Fullscreen Gallery",
+                lbFee: "Admission Fee",
+                lbCalcBtn: "Calculate Budget",
+                toastAdded: "Added to favorites!",
+                toastRemoved: "Removed from favorites!",
+                footerCopy: "© 2026 WorldTour. Global tourism data & ticket guide.",
+                footerDisclaimer: "Prices are based on average adult rates and are subject to change.",
+                // Sponsored Ads EN
+                adFlyTitle: "FlyX Airlines - Early Bird Flight Deals!",
+                adFlyDesc: "Up to 35% early booking discount on all flights. Use promo code 'WORLD2026'!",
+                adFlyBtn: "Search Flights",
+                adGuardTitle: "TravelGuard Insurance",
+                adGuardDesc: "$50,000 travel insurance starting at $1/day.",
+                adGuardBtn: "Get Quote",
+                adSimTitle: "GlobalSim - Unlimited Global eSIM",
+                adSimDesc: "Instant 5G high-speed internet in 190+ countries without swapping SIM cards.",
+                adSimBtn: "Buy eSIM",
+                adSimBadge: "SPONSORED RECOMMENDATION",
+                adBookingTitle: "BookingPlus - Last Minute Hotel Deals!",
+                adBookingDesc: "Up to 40% off top 5-star hotels at global travel destinations.",
+                adBookingBtn: "Find Hotels",
+                // Categories EN
+                catAll: "All Categories",
+                catHistory: "History & Heritage",
+                catArchitecture: "Architectural Wonders",
+                catNature: "Nature & Scenery",
+                catAdventure: "Adventure & Exploration",
+                // Sort EN
+                sortDefault: "Default Order",
+                sortPriceAsc: "Price: Low to High",
+                sortPriceDesc: "Price: High to Low",
+                sortRatingDesc: "Highest Rated",
+                // Continents EN
+                contAll: "All",
+                contEurope: "Europe",
+                contAsia: "Asia",
+                contAmericas: "Americas",
+                contAfrica: "Africa",
+                contOceania: "Oceania"
+            }
+        };
+
+        const attractions = [
+            {
+                id: 1,
+                name: { TR: "Kapadokya & Peri Bacaları", EN: "Cappadocia & Fairy Chimneys" },
+                country: { TR: "Türkiye", EN: "Turkey" },
+                city: { TR: "Nevşehir", EN: "Nevsehir" },
+                continent: "Europe",
+                category: "Nature",
+                priceUSD: 15,
+                rating: 4.9,
+                image: "https://images.unsplash.com/photo-1608037521255-f86a95f87bc2?auto=format&fit=crop&w=800&q=80",
+                hours: "08:00 - 19:00",
+                bestSeason: { TR: "Nisan - Haziran / Eylül - Kas", EN: "April - June / Sept - Nov" },
+                description: { 
+                    TR: "Milyonlarca yıl önce volkanik küllerin aşınmasıyla oluşan peribacaları, yeraltı şehirleri ve gün doğumunda gökyüzünü süsleyen sıcak hava balonlarıyla dünyanın en büyüleyici doğal mirasıdır.",
+                    EN: "World famous natural wonder featuring unique fairy chimneys, underground cities, and magical sunrise hot air balloon flights over volcanic rock formations."
+                }
+            },
+            {
+                id: 2,
+                name: { TR: "Ayasofya-i Kebir Cami", EN: "Hagia Sophia Mosque" },
+                country: { TR: "Türkiye", EN: "Turkey" },
+                city: { TR: "İstanbul", EN: "Istanbul" },
+                continent: "Europe",
+                category: "History",
+                priceUSD: 27,
+                rating: 4.9,
+                image: "https://images.unsplash.com/photo-1541432901042-2d8bd64b4a9b?auto=format&fit=crop&w=800&q=80",
+                hours: "09:00 - 19:30",
+                bestSeason: { TR: "Nisan - Haziran", EN: "April - June" },
+                description: { 
+                    TR: "MS 537 yılında inşa edilen, devasa kubbesi ve eşsiz mozaikleriyle Doğu Roma ve Osmanlı mimarisinin görkemli sentezini sunan dünya tarihinin dönüm noktası.",
+                    EN: "Constructed in 537 AD, Hagia Sophia is an architectural marvel showcasing a blend of Byzantine mosaics and Ottoman grandeur under its immense dome."
+                }
+            },
+            {
+                id: 3,
+                name: { TR: "Eyfel Kulesi", EN: "Eiffel Tower" },
+                country: { TR: "Fransa", EN: "France" },
+                city: { TR: "Paris", EN: "Paris" },
+                continent: "Europe",
+                category: "Architecture",
+                priceUSD: 32,
+                rating: 4.8,
+                image: "https://images.unsplash.com/photo-1511739001486-6bfe10ce785f?auto=format&fit=crop&w=800&q=80",
+                hours: "09:30 - 22:45",
+                bestSeason: { TR: "İlkbahar / Sonbahar", EN: "Spring / Autumn" },
+                description: { 
+                    TR: "1889 yılında Gustave Eiffel tarafından inşa edilen 330 metrelik demir kule, Paris'in siluetine ve Fransız kültürüne damgasını vurmuştur.",
+                    EN: "Built by Gustave Eiffel in 1889, this 330-meter wrought-iron lattice tower is a globally recognized symbol of Paris and French elegance."
+                }
+            },
+            {
+                id: 4,
+                name: { TR: "Tac Mahal", EN: "Taj Mahal" },
+                country: { TR: "Hindistan", EN: "India" },
+                city: { TR: "Agra", EN: "Agra" },
+                continent: "Asia",
+                category: "Architecture",
+                priceUSD: 15,
+                rating: 4.9,
+                image: "https://images.unsplash.com/photo-1564507592333-c60657eea523?auto=format&fit=crop&w=800&q=80",
+                hours: "06:00 - 18:30",
+                bestSeason: { TR: "Ekim - Mart", EN: "October - March" },
+                description: { 
+                    TR: "Şah Cihan'ın eşi Mümtaz Mahal anısına yaptırdığı beyaz mermer anıt mezar. İslam, İran ve Hint mimarisinin büyüleyici bir sentezidir.",
+                    EN: "An immense mausoleum of white marble, built in Agra between 1631 and 1648 by order of the Mughal emperor Shah Jahan in memory of his favourite wife."
+                }
+            },
+            {
+                id: 5,
+                name: { TR: "Giza Piramitleri", EN: "Pyramids of Giza" },
+                country: { TR: "Mısır", EN: "Egypt" },
+                city: { TR: "Kahire", EN: "Cairo" },
+                continent: "Africa",
+                category: "History",
+                priceUSD: 20,
+                rating: 4.8,
+                image: "https://images.unsplash.com/photo-1503177119275-0aa32b3a9368?auto=format&fit=crop&w=800&q=80",
+                hours: "07:00 - 17:00",
+                bestSeason: { TR: "Kasım - Şubat", EN: "November - February" },
+                description: { 
+                    TR: "Dünyanın Antik Yedi Harikası'ndan günümüze ulaşan tek yapı. Keops, Kefren ve Mikerinos piramitleri kadim Mısır gizemini yaşatır.",
+                    EN: "The oldest of the Seven Wonders of the Ancient World, including the Great Pyramid of Khufu and the enigmatic Great Sphinx."
+                }
+            },
+            {
+                id: 6,
+                name: { TR: "Kolezyum", EN: "Colosseum" },
+                country: { TR: "İtalya", EN: "Italy" },
+                city: { TR: "Roma", EN: "Rome" },
+                continent: "Europe",
+                category: "History",
+                priceUSD: 22,
+                rating: 4.9,
+                image: "https://images.unsplash.com/photo-1552832230-c0197dd311b5?auto=format&fit=crop&w=800&q=80",
+                hours: "08:30 - 19:15",
+                bestSeason: { TR: "Nisan - Mayıs", EN: "April - May" },
+                description: { 
+                    TR: "MS 80 yılında tamamlanan Roma İmparatorluğu'nun devasa amfitiyatrosu. Gladyatör dövüşlerine ev sahipliği yapmış mimarlık harikası.",
+                    EN: "The largest ancient amphitheatre ever built, hosting gladiatorial contests and public spectacles in the heart of Imperial Rome."
+                }
+            },
+            {
+                id: 7,
+                name: { TR: "Machu Picchu", EN: "Machu Picchu" },
+                country: { TR: "Peru", EN: "Peru" },
+                city: { TR: "Cusco", EN: "Cusco" },
+                continent: "Americas",
+                category: "Adventure",
+                priceUSD: 45,
+                rating: 5.0,
+                image: "https://images.unsplash.com/photo-1526392060635-9d6019884377?auto=format&fit=crop&w=800&q=80",
+                hours: "06:00 - 17:30",
+                bestSeason: { TR: "Mayıs - Ekim", EN: "May - October" },
+                description: { 
+                    TR: "And Dağları'nın zirvesinde 2.430 metre yükseklikte kurulmuş İnka antik kenti. İnanılmaz teraslama tekniği ve mistik atmosferiyle ünlüdür.",
+                    EN: "A 15th-century Inca citadel set high in the Andes Mountains, renowned for its sophisticated dry-stone walls and astronomical alignments."
+                }
+            },
+            {
+                id: 8,
+                name: { TR: "Özgürlük Anıtı", EN: "Statue of Liberty" },
+                country: { TR: "ABD", EN: "USA" },
+                city: { TR: "New York", EN: "New York" },
+                continent: "Americas",
+                category: "History",
+                priceUSD: 25,
+                rating: 4.7,
+                image: "https://images.unsplash.com/photo-1605130284535-11dd9dee6660?auto=format&fit=crop&w=800&q=80",
+                hours: "09:00 - 17:00",
+                bestSeason: { TR: "Eylül - Kasım", EN: "September - November" },
+                description: { 
+                    TR: "Fransa'nın ABD'ye hediyesi olan neoklasik bakır heykel. Liberty Island üzerinde yer alır ve özgürlüğün simgesidir.",
+                    EN: "A colossal neoclassical sculpture on Liberty Island in New York Harbor, gifted by France to the United States as a beacon of freedom."
+                }
+            },
+            {
+                id: 9,
+                name: { TR: "Petra Antik Kenti", EN: "Petra Ancient City" },
+                country: { TR: "Ürdün", EN: "Jordan" },
+                city: { TR: "Ma'an", EN: "Ma'an" },
+                continent: "Asia",
+                category: "History",
+                priceUSD: 70,
+                rating: 4.9,
+                image: "https://images.unsplash.com/photo-1579606819855-082260eb0588?auto=format&fit=crop&w=800&q=80",
+                hours: "06:00 - 18:00",
+                bestSeason: { TR: "Mart - Mayıs", EN: "March - May" },
+                description: { 
+                    TR: "MÖ 300 yıllarında Nebatiler tarafından pembe kayalıklara yontularak inşa edilmiş antik kent. 'Gül Kırmızısı Şehir' olarak bilinir.",
+                    EN: "Famous archaeological site in Jordan's southwestern desert, featuring rock-cut architecture carved directly into vibrant pink sandstone cliffs."
+                }
+            },
+            {
+                id: 10,
+                name: { TR: "Çin Seddi (Badaling)", EN: "Great Wall of China" },
+                country: { TR: "Çin", EN: "China" },
+                city: { TR: "Pekin", EN: "Beijing" },
+                continent: "Asia",
+                category: "Adventure",
+                priceUSD: 12,
+                rating: 4.8,
+                image: "https://images.unsplash.com/photo-1508804185872-d7badad00f7d?auto=format&fit=crop&w=800&q=80",
+                hours: "07:30 - 16:00",
+                bestSeason: { TR: "Eylül - Ekim", EN: "September - October" },
+                description: { 
+                    TR: "Dünyanın en uzun savunma duvarı. Binlerce kilometre boyunca dağ sırtlarını aşan bu tarihi surlar insanlığın devasa yapı projelerindendir.",
+                    EN: "A series of fortifications made of stone, brick, and tamped earth stretching thousands of miles across northern China."
+                }
+            },
+            {
+                id: 11,
+                name: { TR: "Fushimi Inari Tapınağı", EN: "Fushimi Inari Shrine" },
+                country: { TR: "Japonya", EN: "Japan" },
+                city: { TR: "Kyoto", EN: "Kyoto" },
+                continent: "Asia",
+                category: "Culture",
+                priceUSD: 0,
+                rating: 4.9,
+                image: "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=800&q=80",
+                hours: "24 Saat Açık",
+                bestSeason: { TR: "Mart - Mayıs", EN: "March - May" },
+                description: { 
+                    TR: "Binlerce kırmızı Torii kapısından oluşan büyüleyici yürüyüş yollarıyla tanınan, Inari dağı eteklerindeki kutsal Şinto tapınağı.",
+                    EN: "Important Shinto shrine in southern Kyoto, famous for its thousands of vermilion torii gates lining trails up Mount Inari."
+                }
+            },
+            {
+                id: 12,
+                name: { TR: "Santorini (Oia)", EN: "Santorini (Oia)" },
+                country: { TR: "Yunanistan", EN: "Greece" },
+                city: { TR: "Santorini", EN: "Santorini" },
+                continent: "Europe",
+                category: "Nature",
+                priceUSD: 0,
+                rating: 4.9,
+                image: "https://images.unsplash.com/photo-1570077188670-e3a8d69ac5ff?auto=format&fit=crop&w=800&q=80",
+                hours: "24 Saat Açık",
+                bestSeason: { TR: "Mayıs - Ekim", EN: "May - October" },
+                description: { 
+                    TR: "Ege Denizi'ne bakan volkanik kaldera falezleri üzerine kurulu mavi kubbeli beyaz evleri ve efsanevi gün batımı manzaraları.",
+                    EN: "Iconic Aegean island known for its whitewashed villages, blue-domed churches, and dramatic sunsets over volcanic cliffs."
+                }
+            },
+            {
+                id: 13,
+                name: { TR: "Akropolis & Parthenon", EN: "Acropolis & Parthenon" },
+                country: { TR: "Yunanistan", EN: "Greece" },
+                city: { TR: "Atina", EN: "Athens" },
+                continent: "Europe",
+                category: "History",
+                priceUSD: 22,
+                rating: 4.8,
+                image: "https://images.unsplash.com/photo-1555993539-1732b0258235?auto=format&fit=crop&w=800&q=80",
+                hours: "08:00 - 20:00",
+                bestSeason: { TR: "Nisan - Haziran", EN: "April - June" },
+                description: { 
+                    TR: "Antik Yunan medeniyetinin ve demokrasinin doğduğu kayalık tepede yükselen, Tanrıça Athena'ya adanmış görkemli tapınak.",
+                    EN: "An ancient citadel located on a rocky outcrop above Athens, containing the remains of several ancient buildings of great architectural significance."
+                }
+            },
+            {
+                id: 14,
+                name: { TR: "Kurtarıcı İsa Heykeli", EN: "Christ the Redeemer" },
+                country: { TR: "Brezilya", EN: "Brazil" },
+                city: { TR: "Rio de Janeiro", EN: "Rio de Janeiro" },
+                continent: "Americas",
+                category: "Architecture",
+                priceUSD: 20,
+                rating: 4.8,
+                image: "https://images.unsplash.com/photo-1516306580123-e6e52b1b7b5f?auto=format&fit=crop&w=800&q=80",
+                hours: "08:00 - 19:00",
+                bestSeason: { TR: "Aralık - Mart", EN: "December - March" },
+                description: { 
+                    TR: "Corcovado Dağı'nın tepesinde kolları açık şekilde şehri kucaklayan 38 metre yüksekliğindeki dünyaca ünlü İsa heykeli.",
+                    EN: "Art Deco statue of Jesus Christ in Rio de Janeiro created by French sculptor Paul Landowski overlooking the vibrant coastal city."
+                }
+            },
+            {
+                id: 15,
+                name: { TR: "Big Ben & Westminster", EN: "Big Ben & Westminster" },
+                country: { TR: "Birleşik Krallık", EN: "United Kingdom" },
+                city: { TR: "Londra", EN: "London" },
+                continent: "Europe",
+                category: "History",
+                priceUSD: 32,
+                rating: 4.7,
+                image: "https://images.unsplash.com/photo-1529655683826-aba9b3e77383?auto=format&fit=crop&w=800&q=80",
+                hours: "09:00 - 17:00",
+                bestSeason: { TR: "Mayıs - Eylül", EN: "May - September" },
+                description: { 
+                    TR: "Thames Nehri kıyısında yer alan ikonik saat kulesi ve Birleşik Krallık parlamentosuna ev sahipliği yapan neo-gotik mimari harikası.",
+                    EN: "Iconic clock tower at the north end of the Houses of Parliament in Westminster, symbolizing London's rich democratic history."
+                }
+            },
+            {
+                id: 16,
+                name: { TR: "Angkor Wat", EN: "Angkor Wat" },
+                country: { TR: "Kamboçya", EN: "Cambodia" },
+                city: { TR: "Siem Reap", EN: "Siem Reap" },
+                continent: "Asia",
+                category: "History",
+                priceUSD: 37,
+                rating: 4.9,
+                image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80",
+                hours: "05:00 - 17:30",
+                bestSeason: { TR: "Kasım - Şubat", EN: "November - February" },
+                description: { 
+                    TR: "Dünyanın en büyük dini anıt kompleksi. 12. yüzyılda Khmer İmparatorluğu tarafından inşa edilen büyüleyici taş tapınaklar şehri.",
+                    EN: "The largest religious structure in the world, constructed as a Hindu temple transformed into a Buddhist complex in Siem Reap."
+                }
+            },
+            {
+                id: 17,
+                name: { TR: "Mavi Lagün (Blue Lagoon)", EN: "Blue Lagoon" },
+                country: { TR: "İzlanda", EN: "Iceland" },
+                city: { TR: "Grindavík", EN: "Grindavik" },
+                continent: "Europe",
+                category: "Nature",
+                priceUSD: 85,
+                rating: 4.8,
+                image: "https://images.unsplash.com/photo-1529963183134-61a90db47eaf?auto=format&fit=crop&w=800&q=80",
+                hours: "08:00 - 21:00",
+                bestSeason: { TR: "Tüm Yıl (Kışın Kuzey Işıkları)", EN: "All Year (Northern Lights in Winter)" },
+                description: { 
+                    TR: "Siyah lav kayalıkları arasında yer alan, mineral bakımından zengin ve doğal jeotermal kaynaklarla ısınan masalsı turkuaz kaplıca.",
+                    EN: "A geothermal spa in southwestern Iceland located in a lava field, renowned for its mineral-rich warm milky-blue waters."
+                }
+            },
+            {
+                id: 18,
+                name: { TR: "Geirangerfjord", EN: "Geirangerfjord" },
+                country: { TR: "Norveç", EN: "Norway" },
+                city: { TR: "Stranda", EN: "Stranda" },
+                continent: "Europe",
+                category: "Nature",
+                priceUSD: 0,
+                rating: 4.9,
+                image: "https://images.unsplash.com/photo-1506703719100-a0f3a48c0f86?auto=format&fit=crop&w=800&q=80",
+                hours: "24 Saat Açık",
+                bestSeason: { TR: "Haziran - Ağustos", EN: "June - August" },
+                description: { 
+                    TR: "UNESCO Dünya Mirası listesindeki büyüleyici fiyort. Yüksek dağlardan süzülen şelaleleri ve dik kanyonlarıyla doğanın zirvesi.",
+                    EN: "A UNESCO World Heritage fjord surrounded by majestic snow-covered mountain peaks, lush green vegetation, and roaring waterfalls."
+                }
+            },
+            {
+                id: 19,
+                name: { TR: "Masa Dağı (Table Mountain)", EN: "Table Mountain" },
+                country: { TR: "Güney Afrika", EN: "South Africa" },
+                city: { TR: "Cape Town", EN: "Cape Town" },
+                continent: "Africa",
+                category: "Adventure",
+                priceUSD: 24,
+                rating: 4.8,
+                image: "https://images.unsplash.com/photo-1580618672591-eb180b1a973f?auto=format&fit=crop&w=800&q=80",
+                hours: "08:30 - 18:00",
+                bestSeason: { TR: "Kasım - Mart", EN: "November - March" },
+                description: { 
+                    TR: "Cape Town şehrine tepeden bakan ve zirvesi dümdüz bir masayı andıran düz tepeli ikonik dağ. Teleferik ile zirveye çıkılabilir.",
+                    EN: "A flat-topped mountain forming a prominent landmark overlooking the city of Cape Town in South Africa."
+                }
+            },
+            {
+                id: 20,
+                name: { TR: "Iguazu Şelaleleri", EN: "Iguazu Falls" },
+                country: { TR: "Arjantin", EN: "Argentina" },
+                city: { TR: "Puerto Iguazú", EN: "Puerto Iguazu" },
+                continent: "Americas",
+                category: "Nature",
+                priceUSD: 28,
+                rating: 4.9,
+                image: "https://images.unsplash.com/photo-1583225214464-9296029427aa?auto=format&fit=crop&w=800&q=80",
+                hours: "08:00 - 18:00",
+                bestSeason: { TR: "Ağustos - Kasım", EN: "August - November" },
+                description: { 
+                    TR: "Arjantin ve Brezilya sınırında yer alan, 275 ayrı şelaleden oluşan ve 'Şeytan Boğazı' ile ünlü dünyanın en geniş şelale sistemi.",
+                    EN: "Waterfalls of the Iguazu River on the border of Argentina and Brazil, making up the largest waterfall system in the world."
+                }
+            },
+            {
+                id: 21,
+                name: { TR: "Phi Phi Adaları", EN: "Phi Phi Islands" },
+                country: { TR: "Tayland", EN: "Thailand" },
+                city: { TR: "Krabi", EN: "Krabi" },
+                continent: "Asia",
+                category: "Nature",
+                priceUSD: 12,
+                rating: 4.8,
+                image: "https://images.unsplash.com/photo-1508009603885-50cf7c579365?auto=format&fit=crop&w=800&q=80",
+                hours: "24 Saat Açık",
+                bestSeason: { TR: "Kasım - Nisan", EN: "November - April" },
+                description: { 
+                    TR: "Andaman Denizi'nde dik kireçtaşı kayalıkları, turkuaz lagünleri ve kristal berraklığındaki plajlarıyla tropikal cennet.",
+                    EN: "An island group in Thailand famous for limestone cliffs, emerald lagoons, coral reefs, and vibrant beach nightlife."
+                }
+            },
+            {
+                id: 22,
+                name: { TR: "Bali & Tanah Lot", EN: "Bali & Tanah Lot" },
+                country: { TR: "Endonezya", EN: "Indonesia" },
+                city: { TR: "Bali", EN: "Bali" },
+                continent: "Asia",
+                category: "Culture",
+                priceUSD: 8,
+                rating: 4.9,
+                image: "https://images.unsplash.com/photo-1596402184320-417e7178b2cd?auto=format&fit=crop&w=800&q=80",
+                hours: "07:00 - 19:00",
+                bestSeason: { TR: "Nisan - Ekim", EN: "April - October" },
+                description: { 
+                    TR: "Okyanus dalgalarının ortasındaki bir kaya kütlesi üzerine inşa edilmiş ikonik Hindu deniz tapınağı ve Bali'nin mistik kültürü.",
+                    EN: "An ancient Hindu land worship temple perched on an offshore rock formation amidst crashing ocean waves in Bali."
+                }
+            },
+            {
+                id: 23,
+                name: { TR: "Keukenhof Bahçeleri", EN: "Keukenhof Gardens" },
+                country: { TR: "Hollanda", EN: "Netherlands" },
+                city: { TR: "Lisse", EN: "Lisse" },
+                continent: "Europe",
+                category: "Nature",
+                priceUSD: 21,
+                rating: 4.8,
+                image: "https://images.unsplash.com/photo-1589802829985-817e51171b92?auto=format&fit=crop&w=800&q=80",
+                hours: "08:00 - 19:30",
+                bestSeason: { TR: "Nisan - Mayıs", EN: "April - May" },
+                description: { 
+                    TR: "Dünyanın en büyük çiçek bahçesi. Her yıl milyonlarca renkli lale, sümbül ve nergisin görsel şölen sunduğu cennet köşe.",
+                    EN: "Known as the Garden of Europe, it is one of the world's largest flower gardens boasting over 7 million blooming spring bulbs."
+                }
+            },
+            {
+                id: 24,
+                name: { TR: "Prag Kalesi & Charles Köprüsü", EN: "Prague Castle & Charles Bridge" },
+                country: { TR: "Çekya", EN: "Czechia" },
+                city: { TR: "Prag", EN: "Prague" },
+                continent: "Europe",
+                category: "History",
+                priceUSD: 18,
+                rating: 4.8,
+                image: "https://images.unsplash.com/photo-1519671482749-fd09be7ccebf?auto=format&fit=crop&w=800&q=80",
+                hours: "06:00 - 22:00",
+                bestSeason: { TR: "Mayıs - Eylül", EN: "May - September" },
+                description: { 
+                    TR: "Vltava Nehri üzerindeki 30 barok heykelle süslü tarihi taş köprü ve şehre hakim görkemli ortaçağ kalesi kompleksi.",
+                    EN: "A historic gothic stone bridge connecting Prague Castle with the Old Town, lined with 30 baroque statues of saints."
+                }
+            },
+            {
+                id: 25,
+                name: { TR: "Matterhorn Zirvesi", EN: "Matterhorn Peak" },
+                country: { TR: "İsviçre", EN: "Switzerland" },
+                city: { TR: "Zermatt", EN: "Zermatt" },
+                continent: "Europe",
+                category: "Nature",
+                priceUSD: 95,
+                rating: 4.9,
+                image: "https://images.unsplash.com/photo-1530122037265-a5f1f91d3b99?auto=format&fit=crop&w=800&q=80",
+                hours: "08:00 - 17:00",
+                bestSeason: { TR: "Aralık - Mart / Temmuz", EN: "December - March / July" },
+                description: { 
+                    TR: "Alpler'in ikonik piramit şeklindeki zirvesi. Zermatt kasabasından kalkan dağ treni ile nefes kesici manzaralar sunar.",
+                    EN: "A mountain of the Alps, straddling the main watershed and border between Switzerland and Italy with a nearly symmetric pyramidal peak."
+                }
+            },
+            {
+                id: 26,
+                name: { TR: "Marakeş & Jardin Majorelle", EN: "Marrakech & Majorelle Garden" },
+                country: { TR: "Fas", EN: "Morocco" },
+                city: { TR: "Marakeş", EN: "Marrakech" },
+                continent: "Africa",
+                category: "Culture",
+                priceUSD: 14,
+                rating: 4.7,
+                image: "https://images.unsplash.com/photo-1548013146-72479768bada?auto=format&fit=crop&w=800&q=80",
+                hours: "08:00 - 18:30",
+                bestSeason: { TR: "Ekim - Nisan", EN: "October - April" },
+                description: { 
+                    TR: "Yves Saint Laurent tarafından korunan cobalt mavisi binaları, kaktüsleri ve egzotik bitkileriyle ünlü sanat bahçesi ve otantik Medina.",
+                    EN: "An enchanting botanical garden and artist's landscape studio in Marrakech, featuring cobalt blue villas and rare exotic desert flora."
+                }
+            },
+            {
+                id: 27,
+                name: { TR: "Banff Ulusal Parkı", EN: "Banff National Park" },
+                country: { TR: "Kanada", EN: "Canada" },
+                city: { TR: "Alberta", EN: "Alberta" },
+                continent: "Americas",
+                category: "Nature",
+                priceUSD: 16,
+                rating: 4.9,
+                image: "https://images.unsplash.com/photo-1511918984145-489063233827?auto=format&fit=crop&w=800&q=80",
+                hours: "24 Saat Açık",
+                bestSeason: { TR: "Haziran - Eylül", EN: "June - September" },
+                description: { 
+                    TR: "Kayalık Dağlar'ın merkezinde yer alan Louise Gölü ve Moraine Gölü gibi kristal turkuaz gölleriyle tanınan muazzam doğa parkı.",
+                    EN: "Canada's oldest national park located in the Rocky Mountains, world-famous for turquoise glacial lakes like Lake Louise and Moraine Lake."
+                }
+            },
+            {
+                id: 28,
+                name: { TR: "Sydney Opera Binası", EN: "Sydney Opera House" },
+                country: { TR: "Avustralya", EN: "Australia" },
+                city: { TR: "Sydney", EN: "Sydney" },
+                continent: "Oceania",
+                category: "Architecture",
+                priceUSD: 28,
+                rating: 4.7,
+                image: "https://images.unsplash.com/photo-1624138784614-87fd1b6528f8?auto=format&fit=crop&w=800&q=80",
+                hours: "09:00 - 17:00",
+                bestSeason: { TR: "Ekim - Nisan", EN: "October - April" },
+                description: { 
+                    TR: "Yelken şeklindeki devasa çatı mimarisiyle 20. yüzyılın en seçkin yapılarından biri. Sydney Limanı'nın simgesidir.",
+                    EN: "A multi-venue performing arts centre in Sydney Harbour, widely regarded as one of the world's most famous expressionist architectural icons."
+                }
+            },
+            {
+                id: 29,
+                name: { TR: "Burj Khalifa", EN: "Burj Khalifa" },
+                country: { TR: "Birleşik Arap Emirlikleri", EN: "United Arab Emirates" },
+                city: { TR: "Dubai", EN: "Dubai" },
+                continent: "Asia",
+                category: "Architecture",
+                priceUSD: 48,
+                rating: 4.7,
+                image: "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=800&q=80",
+                hours: "08:30 - 23:00",
+                bestSeason: { TR: "Kasım - Nisan", EN: "November - April" },
+                description: { 
+                    TR: "828 metre yüksekliğiyle dünyanın en yüksek binası. 124 ve 148. katlarındaki gözlem teraslarından dikey şehir manzarası.",
+                    EN: "The tallest skyscraper in the world standing at 828 meters, featuring outdoor observation decks offering panoramic desert-sea cityscapes."
+                }
+            },
+            {
+                id: 30,
+                name: { TR: "Sagrada Familia", EN: "Sagrada Familia" },
+                country: { TR: "İspanya", EN: "Spain" },
+                city: { TR: "Barselona", EN: "Barcelona" },
+                continent: "Europe",
+                category: "Architecture",
+                priceUSD: 30,
+                rating: 4.8,
+                image: "https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?auto=format&fit=crop&w=800&q=80",
+                hours: "09:00 - 18:00",
+                bestSeason: { TR: "Mayıs - Haziran", EN: "May - June" },
+                description: { 
+                    TR: "Antoni Gaudí'nin organik mimari başyapıtı. 1882'den beri yapımı süren büyüleyici bazilika.",
+                    EN: "Antoni Gaudí's unfinished masterwork basilica in Barcelona, combining Gothic and curvilinear Art Nouveau forms."
+                }
+            },
+            {
+                id: 31,
+                name: { TR: "Neuschwanstein Şatosu", EN: "Neuschwanstein Castle" },
+                country: { TR: "Almanya", EN: "Germany" },
+                city: { TR: "Bavyera", EN: "Bavaria" },
+                continent: "Europe",
+                category: "Architecture",
+                priceUSD: 21,
+                rating: 4.8,
+                image: "https://images.unsplash.com/photo-1534313314376-a72289b6181e?auto=format&fit=crop&w=800&q=80",
+                hours: "09:00 - 18:00",
+                bestSeason: { TR: "Eylül - Ekim", EN: "September - October" },
+                description: { 
+                    TR: "Kral II. Ludwig tarafından yaptırılan masalsı şato. Disney kalelerine ilham kaynağı olmuş romantik mimari abidesi.",
+                    EN: "A 19th-century historicist palace on a rugged hill in Bavaria, Germany, which served as the inspiration for Disney's Sleeping Beauty castle."
+                }
+            },
+            {
+                id: 32,
+                name: { TR: "Ha Long Bay (Körfezi)", EN: "Ha Long Bay" },
+                country: { TR: "Vietnam", EN: "Vietnam" },
+                city: { TR: "Quảng Ninh", EN: "Quang Ninh" },
+                continent: "Asia",
+                category: "Nature",
+                priceUSD: 25,
+                rating: 4.9,
+                image: "https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&w=800&q=80",
+                hours: "06:30 - 18:30",
+                bestSeason: { TR: "Ekim - Nisan", EN: "October - April" },
+                description: { 
+                    TR: "Zümrüt yeşili suları ve ormanlarla kaplı binlerce kireçtaşı adacığıyla UNESCO korumasındaki mistik körfez.",
+                    EN: "A UNESCO World Heritage Site featuring emerald waters and thousands of towering limestone islands topped by rainforests."
+                }
+            }
+        ];
+
+        let currentLang = localStorage.getItem('worldtour_lang') || 'TR';
+        let currentCurrency = 'USD';
+        const currencyRates = {
+            USD: { symbol: '$', rate: 1.0 },
+            EUR: { symbol: '€', rate: 0.92 },
+            TRY: { symbol: '₺', rate: 34.50 },
+            GBP: { symbol: '£', rate: 0.78 }
+        };
+
+        let selectedContinent = 'All';
+        let selectedCategory = 'All';
+        let maxPriceUSD = 100;
+        let searchQuery = '';
+        let currentSort = 'default';
+        let wishlist = JSON.parse(localStorage.getItem('worldtour_wishlist') || '[]');
+        let showFavoritesOnly = false;
+        let activeModalAttraction = null;
+
+        // Lightbox state
+        let currentLightboxIndex = 0;
+        let filteredAttractions = [...attractions];
+
+        // Ticket Counter
+        let ticketCounts = { adult: 1, student: 0, child: 0 };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            updateLanguageUI();
+            initContinentFilters();
+            initDropdowns();
+            renderCards();
+            updateWishlistBadge();
+            setupKeyboardEvents();
+        });
+
+        // Helper translation getter
+        function t(key) {
+            return translations[currentLang][key] || key;
+        }
+
+        // Toggle Language
+        function setLanguage(lang) {
+            currentLang = lang;
+            localStorage.setItem('worldtour_lang', lang);
+            updateLanguageUI();
+            initContinentFilters();
+            initDropdowns();
+            renderCards();
+            if (activeModalAttraction) {
+                openModal(activeModalAttraction.id);
+            }
+            if (!document.getElementById('lightbox-modal').classList.contains('hidden')) {
+                updateLightboxUI();
+            }
+        }
+
+        function updateLanguageUI() {
+            // Active button classes
+            document.getElementById('btn-lang-tr').className = `px-2.5 py-1.5 rounded-lg transition-all duration-200 ${currentLang === 'TR' ? 'bg-brand-600 text-white shadow-sm' : 'text-slate-400 hover:text-white'}`;
+            document.getElementById('btn-lang-en').className = `px-2.5 py-1.5 rounded-lg transition-all duration-200 ${currentLang === 'EN' ? 'bg-brand-600 text-white shadow-sm' : 'text-slate-400 hover:text-white'}`;
+
+            // Static text fields
+            document.getElementById('txt-app-subtitle').innerText = t('appSubTitle');
+            document.getElementById('txt-currency-label').innerHTML = `<i class="fa-solid fa-coins text-amber-400 mr-1"></i> ${t('currencyLabel')}`;
+            document.getElementById('txt-wishlist-btn').innerText = t('wishlistBtn');
+            document.getElementById('txt-hero-badge').innerHTML = `<i class="fa-solid fa-compass"></i> ${t('heroBadge')}`;
+            document.getElementById('txt-hero-title').innerHTML = t('heroTitle');
+            document.getElementById('txt-hero-desc').innerText = t('heroDesc');
+            document.getElementById('search-input').placeholder = t('searchPlaceholder');
+            document.getElementById('txt-continent-label').innerHTML = `<i class="fa-solid fa-globe mr-1 text-brand-400"></i> ${t('continentLabel')}`;
+            document.getElementById('txt-category-label').innerHTML = `<i class="fa-solid fa-layer-group mr-1 text-brand-400"></i> ${t('categoryLabel')}`;
+            document.getElementById('txt-maxprice-label').innerHTML = `<i class="fa-solid fa-tag mr-1 text-brand-400"></i> ${t('maxPriceLabel')}`;
+            document.getElementById('txt-sort-label').innerHTML = `<i class="fa-solid fa-arrow-down-wide-short mr-1 text-brand-400"></i> ${t('sortLabel')}`;
+            document.getElementById('txt-free-price').innerText = t('freePrice');
+            document.getElementById('txt-stat-shown').innerText = t('statShown');
+            document.getElementById('txt-stat-avgprice').innerText = t('statAvgPrice');
+            document.getElementById('txt-stat-avgrating').innerText = t('statAvgRating');
+            document.getElementById('txt-stat-favorites').innerText = t('statFavorites');
+            document.getElementById('txt-noresults-title').innerText = t('noResultsTitle');
+            document.getElementById('txt-noresults-desc').innerText = t('noResultsDesc');
+            document.getElementById('btn-show-all').innerText = t('showAllBtn');
+            document.getElementById('btn-clear-filters').innerText = t('clearFilters');
+            document.getElementById('txt-modal-startprice').innerText = t('modalStartPrice');
+            document.getElementById('txt-modal-catlabel').innerText = t('modalCatLabel');
+            document.getElementById('txt-modal-hourslabel').innerText = t('modalHoursLabel');
+            document.getElementById('txt-modal-seasonlabel').innerText = t('modalSeasonLabel');
+            document.getElementById('txt-modal-overview').innerHTML = `<i class="fa-solid fa-book-open text-brand-400"></i> ${t('modalOverview')}`;
+            document.getElementById('txt-modal-budget-title').innerHTML = `<i class="fa-solid fa-calculator text-amber-400"></i> ${t('modalBudgetTitle')}`;
+            document.getElementById('txt-modal-adult').innerText = t('modalAdult');
+            document.getElementById('txt-modal-student').innerText = t('modalStudent');
+            document.getElementById('txt-modal-child').innerText = t('modalChild');
+            document.getElementById('txt-modal-totalbudget').innerText = t('modalTotalBudget');
+            document.getElementById('txt-modal-open-gallery').innerText = t('modalOpenGallery');
+            document.getElementById('txt-lb-fee').innerText = t('lbFee');
+            document.getElementById('txt-lb-calc-btn').innerText = t('lbCalcBtn');
+            document.getElementById('txt-footer-copy').innerHTML = t('footerCopy');
+            document.getElementById('txt-footer-disclaimer').innerText = t('footerDisclaimer');
+
+            // Sponsored Ads Text
+            document.getElementById('ad-fly-title').innerText = t('adFlyTitle');
+            document.getElementById('ad-fly-desc').innerText = t('adFlyDesc');
+            document.getElementById('ad-fly-btn').innerText = t('adFlyBtn');
+            document.getElementById('ad-guard-title').innerText = t('adGuardTitle');
+            document.getElementById('ad-guard-desc').innerText = t('adGuardDesc');
+            document.getElementById('ad-guard-btn').innerText = t('adGuardBtn');
+            if(document.getElementById('ad-booking-title')) {
+                document.getElementById('ad-booking-title').innerText = t('adBookingTitle');
+                document.getElementById('ad-booking-desc').innerText = t('adBookingDesc');
+                document.getElementById('ad-booking-btn').innerText = t('adBookingBtn');
+            }
+        }
+
+        function initContinentFilters() {
+            const list = [
+                { id: 'All', text: t('contAll') },
+                { id: 'Europe', text: t('contEurope') },
+                { id: 'Asia', text: t('contAsia') },
+                { id: 'Americas', text: t('contAmericas') },
+                { id: 'Africa', text: t('contAfrica') },
+                { id: 'Oceania', text: t('contOceania') }
+            ];
+
+            const container = document.getElementById('continent-filters');
+            container.innerHTML = list.map(item => {
+                const isActive = selectedContinent === item.id;
+                return `
+                    <button onclick="selectContinent('${item.id}')" 
+                        class="continent-btn px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all ${
+                            isActive 
+                            ? 'bg-brand-600 text-white shadow-lg shadow-brand-500/20' 
+                            : 'bg-slate-900 border border-slate-700/80 text-slate-400 hover:text-white hover:bg-slate-800'
+                        }">
+                        ${item.text}
+                    </button>
+                `;
+            }).join('');
+        }
+
+        function initDropdowns() {
+            const catSel = document.getElementById('category-filter');
+            catSel.innerHTML = `
+                <option value="All">${t('catAll')}</option>
+                <option value="History">${t('catHistory')}</option>
+                <option value="Architecture">${t('catArchitecture')}</option>
+                <option value="Nature">${t('catNature')}</option>
+                <option value="Adventure">${t('catAdventure')}</option>
+            `;
+            catSel.value = selectedCategory;
+
+            const sortSel = document.getElementById('sort-order');
+            sortSel.innerHTML = `
+                <option value="default">${t('sortDefault')}</option>
+                <option value="price-asc">${t('sortPriceAsc')}</option>
+                <option value="price-desc">${t('sortPriceDesc')}</option>
+                <option value="rating-desc">${t('sortRatingDesc')}</option>
+            `;
+            sortSel.value = currentSort;
+        }
+
+        function formatPrice(usdPrice) {
+            if (usdPrice === 0) return t('freePrice');
+            const { symbol, rate } = currencyRates[currentCurrency];
+            const converted = (usdPrice * rate).toFixed(0);
+            return `${symbol}${Number(converted).toLocaleString(currentLang === 'TR' ? 'tr-TR' : 'en-US')}`;
+        }
+
+        function setCurrency(currency) {
+            currentCurrency = currency;
+            ['USD', 'EUR', 'TRY', 'GBP'].forEach(curr => {
+                const btn = document.getElementById(`btn-${curr.toLowerCase()}`);
+                if (curr === currency) {
+                    btn.className = "px-2 py-1 sm:px-2.5 sm:py-1.5 rounded-lg font-semibold transition-all duration-200 bg-brand-600 text-white shadow-sm";
+                } else {
+                    btn.className = "px-2 py-1 sm:px-2.5 sm:py-1.5 rounded-lg font-semibold transition-all duration-200 text-slate-300 hover:text-white";
+                }
+            });
+
+            document.getElementById('price-limit-display').innerText = formatPrice(maxPriceUSD);
+            renderCards();
+            if (activeModalAttraction) updateModalBudget();
+            if (!document.getElementById('lightbox-modal').classList.contains('hidden')) updateLightboxUI();
+        }
+
+        function selectContinent(cont) {
+            selectedContinent = cont;
+            initContinentFilters();
+            applyFilters();
+        }
+
+        function updatePriceSlider(val) {
+            maxPriceUSD = parseInt(val);
+            document.getElementById('price-limit-display').innerText = formatPrice(maxPriceUSD);
+            applyFilters();
+        }
+
+        function handleSearch() {
+            searchQuery = document.getElementById('search-input').value.trim().toLowerCase();
+            const clearBtn = document.getElementById('clear-search');
+            if (searchQuery.length > 0) clearBtn.classList.remove('hidden');
+            else clearBtn.classList.add('hidden');
+            applyFilters();
+        }
+
+        function clearSearch() {
+            document.getElementById('search-input').value = '';
+            searchQuery = '';
+            document.getElementById('clear-search').classList.add('hidden');
+            applyFilters();
+        }
+
+        function toggleWishlistFilter() {
+            showFavoritesOnly = !showFavoritesOnly;
+            const btn = document.getElementById('wishlist-btn');
+            if (showFavoritesOnly) {
+                btn.classList.add('bg-pink-500/20', 'border-pink-500', 'text-pink-300');
+            } else {
+                btn.classList.remove('bg-pink-500/20', 'border-pink-500', 'text-pink-300');
+            }
+            applyFilters();
+        }
+
+        function applyFilters() {
+            selectedCategory = document.getElementById('category-filter').value;
+            currentSort = document.getElementById('sort-order').value;
+            renderCards();
+        }
+
+        function resetAllFilters() {
+            selectedContinent = 'All';
+            selectedCategory = 'All';
+            maxPriceUSD = 100;
+            searchQuery = '';
+            showFavoritesOnly = false;
+            currentSort = 'default';
+
+            document.getElementById('search-input').value = '';
+            document.getElementById('price-slider').value = 100;
+            document.getElementById('price-limit-display').innerText = formatPrice(100);
+            document.getElementById('category-filter').value = 'All';
+            document.getElementById('sort-order').value = 'default';
+            document.getElementById('clear-search').classList.add('hidden');
+            
+            document.getElementById('wishlist-btn').classList.remove('bg-pink-500/20', 'border-pink-500', 'text-pink-300');
+
+            initContinentFilters();
+            renderCards();
+        }
+
+        function renderCards() {
+            const grid = document.getElementById('cards-grid');
+            const emptyState = document.getElementById('empty-state');
+            const banner = document.getElementById('active-filter-banner');
+
+            filteredAttractions = attractions.filter(item => {
+                const matchesContinent = selectedContinent === 'All' || item.continent === selectedContinent;
+                const matchesCategory = selectedCategory === 'All' || item.category === selectedCategory;
+                const matchesPrice = item.priceUSD <= maxPriceUSD;
+                
+                const nameStr = item.name[currentLang].toLowerCase();
+                const countryStr = item.country[currentLang].toLowerCase();
+                const cityStr = item.city[currentLang].toLowerCase();
+                const matchesSearch = searchQuery === '' || nameStr.includes(searchQuery) || countryStr.includes(searchQuery) || cityStr.includes(searchQuery);
+                const matchesWishlist = !showFavoritesOnly || wishlist.includes(item.id);
+
+                return matchesContinent && matchesCategory && matchesPrice && matchesSearch && matchesWishlist;
+            });
+
+            // Sorting logic
+            if (currentSort === 'price-asc') filteredAttractions.sort((a, b) => a.priceUSD - b.priceUSD);
+            else if (currentSort === 'price-desc') filteredAttractions.sort((a, b) => b.priceUSD - a.priceUSD);
+            else if (currentSort === 'rating-desc') filteredAttractions.sort((a, b) => b.rating - a.rating);
+
+            // Active filter banner display
+            const isFiltered = selectedContinent !== 'All' || selectedCategory !== 'All' || maxPriceUSD < 100 || searchQuery !== '' || showFavoritesOnly;
+            if (isFiltered) {
+                banner.classList.remove('hidden');
+                document.getElementById('active-filter-text').innerText = `${t('activeFilterBanner')}: ${filteredAttractions.length} ${t('statShown')}.`;
+            } else {
+                banner.classList.add('hidden');
+            }
+
+            updateStats(filteredAttractions);
+
+            if (filteredAttractions.length === 0) {
+                grid.innerHTML = '';
+                emptyState.classList.remove('hidden');
+                return;
+            }
+
+            emptyState.classList.add('hidden');
+
+            let htmlContent = '';
+            filteredAttractions.forEach((item, index) => {
+                const isFav = wishlist.includes(item.id);
+                const catText = t(`cat${item.category}`);
+
+                htmlContent += `
+                    <div class="glass-card rounded-2xl overflow-hidden flex flex-col group cursor-pointer" onclick="openModal(${item.id})">
+                        <!-- Image Container -->
+                        <div class="relative h-48 w-full overflow-hidden" onclick="event.stopPropagation(); openLightboxAtIndex(${index})">
+                            <img src="${item.image}" alt="${item.name[currentLang]}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+                            <div class="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent"></div>
+                            
+                            <span class="absolute top-3 left-3 bg-slate-900/80 backdrop-blur-md border border-slate-700/80 text-slate-300 text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-lg">
+                                ${catText}
+                            </span>
+
+                            <button onclick="toggleFavorite(event, ${item.id})" class="absolute top-3 right-3 w-8 h-8 rounded-full bg-slate-900/80 border border-slate-700/80 flex items-center justify-center transition-all hover:scale-110 active:scale-95">
+                                <i class="fa-solid fa-heart text-xs ${isFav ? 'text-pink-500' : 'text-slate-500 hover:text-slate-300'}"></i>
+                            </button>
+
+                            <div class="absolute bottom-3 left-3 flex items-center gap-1.5 text-xs text-slate-300 font-medium">
+                                <i class="fa-solid fa-location-dot text-rose-500"></i>
+                                <span>${item.city[currentLang]}, ${item.country[currentLang]}</span>
+                            </div>
+                        </div>
+
+                        <!-- Card Content -->
+                        <div class="p-4 flex-grow flex flex-col justify-between space-y-3">
+                            <div>
+                                <div class="flex items-center justify-between gap-2">
+                                    <h3 class="font-bold text-white text-sm sm:text-base group-hover:text-brand-400 transition-colors line-clamp-1">${item.name[currentLang]}</h3>
+                                    <div class="flex items-center gap-1 bg-amber-400/10 px-1.5 py-0.5 rounded text-amber-400 text-xs font-bold border border-amber-400/20 shrink-0">
+                                        <i class="fa-solid fa-star text-[10px]"></i>
+                                        <span>${item.rating}</span>
+                                    </div>
+                                </div>
+                                <p class="text-xs text-slate-400 mt-1 line-clamp-2 leading-relaxed">${item.description[currentLang]}</p>
+                            </div>
+
+                            <div class="pt-3 border-t border-slate-800/80 flex items-center justify-between">
+                                <div>
+                                    <span class="text-[10px] text-slate-500 block uppercase font-bold">${t('entryFee')}</span>
+                                    <span class="text-base sm:text-lg font-black text-brand-400">${formatPrice(item.priceUSD)}</span>
+                                </div>
+                                <span class="text-xs font-bold text-slate-300 group-hover:translate-x-1 transition-transform flex items-center gap-1 text-brand-400">
+                                    ${t('detailsBtn')} <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                // SPONSORED AD #3: GlobalSim eSIM Native In-Grid Ad Card inserted at position #3
+                if (index === 2) {
+                    htmlContent += `
+                        <div class="glass-card rounded-2xl overflow-hidden flex flex-col justify-between p-5 bg-gradient-to-br from-indigo-950/80 via-slate-900 to-slate-900 border border-indigo-500/40 relative">
+                            <div>
+                                <div class="flex items-center justify-between mb-3">
+                                    <span class="px-2 py-0.5 rounded text-[8px] font-black uppercase bg-indigo-500 text-white">${t('adSimBadge')}</span>
+                                    <i class="fa-solid fa-sim-card text-indigo-400 text-xl"></i>
+                                </div>
+                                <h3 class="text-base font-bold text-white mb-1">${t('adSimTitle')}</h3>
+                                <p class="text-xs text-slate-300 leading-relaxed">${t('adSimDesc')}</p>
+                            </div>
+                            <div class="pt-4 border-t border-slate-800 flex items-center justify-between">
+                                <span class="text-xs font-bold text-indigo-300">$4.99'dan başlayan</span>
+                                <button onclick="showToast('GlobalSim eSIM...', true)" class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs rounded-xl shadow-md transition-all">
+                                    ${t('adSimBtn')}
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                }
+            });
+
+            grid.innerHTML = htmlContent;
+        }
+
+        function updateStats(data) {
+            document.getElementById('stat-total-count').innerText = data.length;
+            if (data.length > 0) {
+                const avg = data.reduce((acc, curr) => acc + curr.priceUSD, 0) / data.length;
+                document.getElementById('stat-avg-price').innerText = formatPrice(avg);
+            } else {
+                document.getElementById('stat-avg-price').innerText = formatPrice(0);
+            }
+            document.getElementById('stat-fav-count').innerText = wishlist.length;
+        }
+
+        function toggleFavorite(e, id) {
+            e.stopPropagation();
+            const index = wishlist.indexOf(id);
+            let added = false;
+            if (index > -1) wishlist.splice(index, 1);
+            else { wishlist.push(id); added = true; }
+            localStorage.setItem('worldtour_wishlist', JSON.stringify(wishlist));
+            updateWishlistBadge();
+            renderCards();
+            showToast(added ? t('toastAdded') : t('toastRemoved'), added);
+        }
+
+        function updateWishlistBadge() {
+            document.getElementById('wishlist-badge').innerText = wishlist.length;
+        }
+
+        function openModal(id) {
+            const item = attractions.find(a => a.id === id);
+            if (!item) return;
+
+            activeModalAttraction = item;
+            ticketCounts = { adult: 1, student: 0, child: 0 };
+
+            document.getElementById('modal-img').src = item.image;
+            document.getElementById('modal-title').innerText = item.name[currentLang];
+            document.getElementById('modal-location').innerHTML = `<i class="fa-solid fa-location-dot text-rose-500"></i> ${item.city[currentLang]}, ${item.country[currentLang]}`;
+            document.getElementById('modal-continent').innerText = t(`cont${item.continent}`);
+            document.getElementById('modal-category').innerText = t(`cat${item.category}`);
+            document.getElementById('modal-hours').innerText = item.hours;
+            document.getElementById('modal-season').innerText = item.bestSeason[currentLang];
+            document.getElementById('modal-desc').innerText = item.description[currentLang];
+            document.getElementById('modal-base-price').innerText = formatPrice(item.priceUSD);
+
+            updateModalBudget();
+
+            document.getElementById('detail-modal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            document.getElementById('detail-modal').classList.add('hidden');
+            document.body.style.overflow = 'auto';
+            activeModalAttraction = null;
+        }
+
+        function updateTicketCount(type, delta) {
+            if (ticketCounts[type] + delta < 0) return;
+            ticketCounts[type] += delta;
+            updateModalBudget();
+        }
+
+        function updateModalBudget() {
+            if (!activeModalAttraction) return;
+
+            const baseUsd = activeModalAttraction.priceUSD;
+            const studentUsd = baseUsd * 0.8; // 20% discount
+            const childUsd = baseUsd * 0.5;   // 50% discount
+
+            document.getElementById('count-adult').innerText = ticketCounts.adult;
+            document.getElementById('count-student').innerText = ticketCounts.student;
+            document.getElementById('count-child').innerText = ticketCounts.child;
+
+            document.getElementById('calc-adult-price').innerText = formatPrice(baseUsd);
+            document.getElementById('calc-student-price').innerText = formatPrice(studentUsd);
+            document.getElementById('calc-child-price').innerText = formatPrice(childUsd);
+
+            const totalPersons = ticketCounts.adult + ticketCounts.student + ticketCounts.child;
+            let rawTotalUsd = (ticketCounts.adult * baseUsd) + (ticketCounts.student * studentUsd) + (ticketCounts.child * childUsd);
+
+            // Group discount for 5+ visitors
+            const groupDiscountBadge = document.getElementById('group-discount-badge');
+            if (totalPersons >= 5) {
+                rawTotalUsd *= 0.85; // 15% extra discount
+                groupDiscountBadge.classList.remove('hidden');
+            } else {
+                groupDiscountBadge.classList.add('hidden');
+            }
+
+            document.getElementById('modal-total-calculated').innerText = formatPrice(rawTotalUsd);
+        }
+
+        function openLightboxAtIndex(index) {
+            currentLightboxIndex = index;
+            updateLightboxUI();
+            document.getElementById('lightbox-modal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function openLightboxFromModal() {
+            if (!activeModalAttraction) return;
+            const idx = filteredAttractions.findIndex(a => a.id === activeModalAttraction.id);
+            closeModal();
+            openLightboxAtIndex(idx >= 0 ? idx : 0);
+        }
+
+        function openDetailModalFromLightbox() {
+            const item = filteredAttractions[currentLightboxIndex];
+            closeLightbox();
+            if (item) openModal(item.id);
+        }
+
+        function closeLightbox() {
+            document.getElementById('lightbox-modal').classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        }
+
+        function navLightbox(direction) {
+            currentLightboxIndex += direction;
+            if (currentLightboxIndex < 0) currentLightboxIndex = filteredAttractions.length - 1;
+            if (currentLightboxIndex >= filteredAttractions.length) currentLightboxIndex = 0;
+            updateLightboxUI();
+        }
+
+        function updateLightboxUI() {
+            const item = filteredAttractions[currentLightboxIndex];
+            if (!item) return;
+
+            document.getElementById('lb-image').src = item.image;
+            document.getElementById('lb-counter').innerText = `${currentLightboxIndex + 1} / ${filteredAttractions.length}`;
+            document.getElementById('lb-title').innerText = item.name[currentLang];
+            document.getElementById('lb-location').innerHTML = `<i class="fa-solid fa-location-dot text-rose-500"></i> ${item.city[currentLang]}, ${item.country[currentLang]}`;
+            document.getElementById('lb-continent').innerText = t(`cont${item.continent}`);
+            document.getElementById('lb-category').innerText = t(`cat${item.category}`);
+            document.getElementById('lb-price').innerText = formatPrice(item.priceUSD);
+        }
+
+        function setupKeyboardEvents() {
+            document.addEventListener('keydown', (e) => {
+                const lbModal = document.getElementById('lightbox-modal');
+                const detailModal = document.getElementById('detail-modal');
+
+                if (!lbModal.classList.contains('hidden')) {
+                    if (e.key === 'Escape') closeLightbox();
+                    if (e.key === 'ArrowLeft') navLightbox(-1);
+                    if (e.key === 'ArrowRight') navLightbox(1);
+                } else if (!detailModal.classList.contains('hidden')) {
+                    if (e.key === 'Escape') closeModal();
+                }
+            });
+        }
+
+        function showToast(msg, success = true) {
+            const toast = document.getElementById('toast');
+            const icon = document.getElementById('toast-icon');
+            const message = document.getElementById('toast-message');
+
+            message.innerText = msg;
+            icon.className = success ? "fa-solid fa-circle-check text-brand-400 text-lg" : "fa-solid fa-circle-xmark text-pink-400 text-lg";
+
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            toast.classList.add('translate-y-0', 'opacity-100');
+
+            setTimeout(() => {
+                toast.classList.remove('translate-y-0', 'opacity-100');
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 2500);
+        }
+    </script>
+</body>
+</html>
